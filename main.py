@@ -1,15 +1,13 @@
 # GUI
 import sys
-import os
 import time
 import threading
 import csv
 
 from labjack import ljm
 
-from PySide6.QtCore import QSize, Qt, QTimer
-from PySide6.QtWidgets import QApplication, QWidget, QMainWindow, QPushButton, QVBoxLayout
-from PySide6 import QtGui
+from PySide6.QtCore import QTimer
+from PySide6.QtWidgets import QApplication, QWidget, QMainWindow, QVBoxLayout
 from PySide6.QtUiTools import QUiLoader
 
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
