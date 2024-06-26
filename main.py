@@ -8,9 +8,14 @@ import csv
 from labjack import ljm
 
 from PySide6.QtCore import QSize, Qt, QTimer
-from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton
+from PySide6.QtWidgets import QApplication, QWidget, QMainWindow, QPushButton, QVBoxLayout
 from PySide6 import QtGui
 from PySide6.QtUiTools import QUiLoader
+
+from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
+import matplotlib.pyplot as plt
+
+from collections import deque
 
 times = []
 voltages = []
@@ -38,12 +43,12 @@ class BombControl:
         ljm.eWriteName(self.handle, self.fill_valve, self.open) # Open fill valve
         ljm.eWriteName(self.handle, self.exhaust_valve, self.close) # Close exhaust valve
 
-        self.set_pressure = float(window.setPressureField.text()) # Get set pressure
+        self.set_pressure = float(self.window.setPressureField.text()) # Get set pressure
         
         # While measured pressure is below set pressure, keep checking measured pressure and updating field
         while self.set_pressure > self.measured_pressure:
             self.measured_pressure = ljm.eReadName(self.handle, self.transducer) * 600
-            window.measuredPressureField.setText("%.2f"%(self.measured_pressure))
+            self.window.measuredPressureField.setText("%.2f"%(self.measured_pressure))
         ljm.eWriteName(self.handle, self.fill_valve, self.close) # Close fill valve
 
     def vent(self):
@@ -51,7 +56,7 @@ class BombControl:
         #global running
         #running = False
 
-        save_file = window.dataSaveFolderField.text() + window.sampleIDField.text() + ".csv"
+        save_file = self.window.dataSaveFolderField.text() + self.window.sampleIDField.text() + ".csv"
         global times, voltages, pressures
 
         with open(save_file, mode='w', newline='') as file:
@@ -87,7 +92,36 @@ class BombControl:
         p = ljm.eReadName(self.handle, self.transducer) * 600
         self.window.measuredPressureField.setText("%.2f"%(p))
 
+class RealTimePlotWidget(QWidget):
+    def __init__(self):
+        super().__init__()
 
+        self.figure, self.axes = plt.subplots()
+        self.canvas = FigureCanvas(self.figure)
+        layout = QVBoxLayout(self)
+        layout.addWidget(self.canvas)
+
+        self.time = deque(maxlen=1000)
+        self.pressure = deque(maxlen=1000)
+
+        self.plot_line, = self.axes.plot([], [], 'b-')
+        self.axes.set_xlabel("Time (s)")
+        self.axes.set_ylabel("Pressure (psi)")
+        self.axes.set_title("Pressure vs. Time")
+
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.update_plot)
+        self.timer.start(100)
+
+    def update_plot(self):
+        self.plot_line.set_data(times, pressures)
+
+        if times:
+            last_time = times[-1]
+            self.axes.set_xlim(max(0,last_time - 10), last_time)
+            self.axes.set_ylim(0, max(pressures))
+
+        self.canvas.draw()
 
 
 loader = QUiLoader()
@@ -97,6 +131,11 @@ def mainwindow_setup(w):
     w.fillButton.clicked.connect(fill_button_pressed) 
     w.ventButton.clicked.connect(vent_button_pressed) 
     w.ignitionButton.clicked.connect(ignition_button_pressed)
+
+def plotwindow_setup(w):
+    w.setWindowTitle("Real-Time Presure vs. Time Plot")
+    plot_widget = RealTimePlotWidget()
+    w.setCentralWidget(plot_widget)
 
 def fill_button_pressed():
     print("fill pressed\n")
@@ -114,19 +153,20 @@ def ignition_button_pressed():
     ti.start()
 
 
-
 app = QApplication([])
 
-window = loader.load("mainwindow.ui", None)
-mainwindow_setup(window)
-window.show()
-bomb = BombControl(window)
+main_window = loader.load("mainwindow.ui", None)
+mainwindow_setup(main_window)
+main_window.show()
+
+plot_window = QMainWindow()
+plotwindow_setup(plot_window)
+plot_window.show()
+
+bomb = BombControl(main_window)
 
 timer = QTimer()
 timer.timeout.connect(bomb.update)
 timer.start(100)
-
-
-
 
 sys.exit(app.exec())
