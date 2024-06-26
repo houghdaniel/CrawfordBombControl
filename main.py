@@ -123,7 +123,6 @@ class RealTimePlotWidget(QWidget):
 
         self.canvas.draw()
 
-
 loader = QUiLoader()
 
 def mainwindow_setup(w):
