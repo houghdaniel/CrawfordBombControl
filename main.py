@@ -20,6 +20,8 @@ voltages = []
 pressures = []
 running = False
 
+pressure_offset = 8
+
 class BombControl:
 
     def __init__(self, window):
@@ -33,7 +35,7 @@ class BombControl:
         self.open = 0
         self.close = 5
         self.set_pressure = 0
-        self.measured_pressure = ljm.eReadName(self.handle, self.transducer) * 600
+        self.measured_pressure = ljm.eReadName(self.handle, self.transducer) * 600 - pressure_offset
 
         window.measuredPressureField.setText("%.2f"%(self.measured_pressure))
 
@@ -45,7 +47,7 @@ class BombControl:
         
         # While measured pressure is below set pressure, keep checking measured pressure and updating field
         while self.set_pressure > self.measured_pressure:
-            self.measured_pressure = ljm.eReadName(self.handle, self.transducer) * 600
+            self.measured_pressure = ljm.eReadName(self.handle, self.transducer) * 600 - pressure_offset
             self.window.measuredPressureField.setText("%.2f"%(self.measured_pressure))
         ljm.eWriteName(self.handle, self.fill_valve, self.close) # Close fill valve
 
