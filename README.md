@@ -1,5 +1,5 @@
 # Crawford Bomb Control
-Control program for Crawford Bomb in Python. Allows you to set the desired pressure, fill, vent, and trigger recording.
+A control program for the Mizzou EMCL Crawford Bomb. Allows the user to set the desired pressure, fill the bomb, vent, and trigger recording.
 
 ## Dependencies
 PySide6
