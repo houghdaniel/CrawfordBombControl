@@ -20,5 +20,5 @@ python -m pip install matplotlib
 ## Usage
 
 ```bash
-$ python .\\main.py
+$ python .\main.py
 ```
