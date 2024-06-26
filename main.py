@@ -89,7 +89,7 @@ class BombControl:
             time.sleep(1/100)
 
     def update(self):
-        p = ljm.eReadName(self.handle, self.transducer) * 600
+        p = ljm.eReadName(self.handle, self.transducer) * 600 - pressure_offset
         self.window.measuredPressureField.setText("%.2f"%(p))
 
 class RealTimePlotWidget(QWidget):
