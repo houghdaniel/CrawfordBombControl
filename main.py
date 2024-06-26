@@ -80,7 +80,7 @@ class BombControl:
         while True:
             t = time.time() - start_time
             v = ljm.eReadName(self.handle, self.transducer)
-            p = v * 600
+            p = v * 600 - pressure_offset
 
             times.append(t)
             voltages.append(v)
