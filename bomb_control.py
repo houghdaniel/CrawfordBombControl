@@ -51,6 +51,8 @@ class BombControl:
     def ignition(self):
         # Begin data recording and trigger pulse for ignition
         s.running = True
+        #ljm.eWriteName(self.handle, self.ignite, 5)
+
 
         start_time = time.time()
 
@@ -64,6 +66,13 @@ class BombControl:
             s.pressures.append(p)
 
             time.sleep(1/100)
+
+    def purge(self):
+        ljm.eWriteName(self.handle, self.exhaust_valve, self.open)
+        ljm.eWriteName(self.handle, self.fill_valve, self.open)
+        time.sleep(10)
+        ljm.eWriteName(self.handle, self.fill_valve, self.close)
+
 
     def update(self):
         p = ljm.eReadName(self.handle, self.transducer) * 600 - s.pressure_offset
