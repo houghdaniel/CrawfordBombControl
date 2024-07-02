@@ -1,27 +1,18 @@
 # GUI
 import sys
-import time
 import threading
-import csv
-
-from labjack import ljm
 
 from PySide6.QtCore import QTimer
-from PySide6.QtWidgets import QApplication, QWidget, QMainWindow, QVBoxLayout
+from PySide6.QtWidgets import QApplication, QMainWindow
 from PySide6.QtUiTools import QUiLoader
 
-from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
-import matplotlib.pyplot as plt
+from bomb_control import BombControl
+from realtime_plot_widget import RealTimePlotWidget
 
-from collections import deque
+import settings as s
 
-times = []
-voltages = []
-pressures = []
-running = False
 
-pressure_offset = 8
-
+'''
 class BombControl:
 
     def __init__(self, window):
@@ -92,6 +83,7 @@ class BombControl:
         p = ljm.eReadName(self.handle, self.transducer) * 600 - pressure_offset
         self.window.measuredPressureField.setText("%.2f"%(p))
 
+
 class RealTimePlotWidget(QWidget):
     def __init__(self):
         super().__init__()
@@ -114,15 +106,15 @@ class RealTimePlotWidget(QWidget):
         self.timer.start(100)
 
     def update_plot(self):
-        self.plot_line.set_data(times, pressures)
+        self.plot_line.set_data(s.times, s.pressures)
 
-        if times:
-            last_time = times[-1]
+        if s.times:
+            last_time = s.times[-1]
             self.axes.set_xlim(max(0,last_time - 10), last_time)
-            self.axes.set_ylim(0, max(pressures))
+            self.axes.set_ylim(0, max(s.pressures))
 
         self.canvas.draw()
-
+'''
 loader = QUiLoader()
 
 def mainwindow_setup(w):
@@ -132,7 +124,7 @@ def mainwindow_setup(w):
     w.ignitionButton.clicked.connect(ignition_button_pressed)
 
 def plotwindow_setup(w):
-    w.setWindowTitle("Real-Time Presure vs. Time Plot")
+    w.setWindowTitle("Real-Time Pressure vs. Time Plot")
     plot_widget = RealTimePlotWidget()
     w.setCentralWidget(plot_widget)
 

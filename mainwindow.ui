@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>422</width>
-    <height>283</height>
+    <height>316</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,9 +17,9 @@
    <widget class="QPushButton" name="ventButton">
     <property name="geometry">
      <rect>
-      <x>120</x>
+      <x>160</x>
       <y>200</y>
-      <width>80</width>
+      <width>91</width>
       <height>41</height>
      </rect>
     </property>
@@ -30,8 +30,8 @@
    <widget class="QPushButton" name="ignitionButton">
     <property name="geometry">
      <rect>
-      <x>220</x>
-      <y>200</y>
+      <x>180</x>
+      <y>40</y>
       <width>181</width>
       <height>41</height>
      </rect>
@@ -43,9 +43,9 @@
    <widget class="QPushButton" name="fillButton">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>30</x>
       <y>200</y>
-      <width>80</width>
+      <width>91</width>
       <height>41</height>
      </rect>
     </property>
@@ -156,6 +156,19 @@
     </property>
     <property name="text">
      <string>Measured Pressure (psig)</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="purgeButton">
+    <property name="geometry">
+     <rect>
+      <x>290</x>
+      <y>200</y>
+      <width>91</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Purge</string>
     </property>
    </widget>
   </widget>
