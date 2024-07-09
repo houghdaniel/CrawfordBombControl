@@ -10,7 +10,7 @@ class BombControl:
         self.handle = ljm.openS("T4", "ANY", "ANY")
         self.fill_valve = "TDAC7"
         self.exhaust_valve = "DAC1"
-        self.ignite = ""
+        self.ignite = "TDAC6"
         self.transducer = "AIN3"
         self.window = window
 
@@ -21,9 +21,15 @@ class BombControl:
 
         window.measuredPressureField.setText("%.2f"%(self.measured_pressure))
 
+        # Close fill, exhaust, and make sure ignition relay is open
+        ljm.eWriteName(self.handle, self.fill_valve, self.close)
+        ljm.eWriteName(self.handle, self.exhaust_valve, self.close)
+        ljm.eWriteName(self.handle, self.ignite, self.open)
+
     def fill(self):
-        ljm.eWriteName(self.handle, self.fill_valve, self.open) # Open fill valve
         ljm.eWriteName(self.handle, self.exhaust_valve, self.close) # Close exhaust valve
+        ljm.eWriteName(self.handle, self.fill_valve, self.open) # Open fill valve
+        
 
         self.set_pressure = float(self.window.setPressureField.text()) # Get set pressure
         
@@ -34,7 +40,7 @@ class BombControl:
         ljm.eWriteName(self.handle, self.fill_valve, self.close) # Close fill valve
 
     def vent(self):
-        # First, end data recording
+        # First, end data recording and log to file
         s.running = False
         save_file = self.window.dataSaveFolderField.text() + self.window.sampleIDField.text() + ".csv"
 
@@ -45,14 +51,21 @@ class BombControl:
                 writer.writerow([s.times[i],s.voltages[i],s.pressures[i]])
         print("Data written to " + save_file)
 
+        # After data is saved, clear arrays to be able to start new experiment without restarting program
+        s.times.clear()
+        s.voltages.clear()
+        s.pressures.clear()
+
         ljm.eWriteName(self.handle, self.fill_valve, self.close) # Close fill valve
         ljm.eWriteName(self.handle, self.exhaust_valve, self.open) # Open exhaust valve
 
     def ignition(self):
-        # Begin data recording and trigger pulse for ignition
+        # Begin data recording
         s.running = True
-        #ljm.eWriteName(self.handle, self.ignite, 5)
+        # Close relay for ignition
+        #ljm.eWriteName(self.handle, self.ignite, self.close)
 
+        # TODO: add another pulse for triggering other equipment
 
         start_time = time.time()
 
